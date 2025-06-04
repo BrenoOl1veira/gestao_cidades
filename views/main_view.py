@@ -144,6 +144,18 @@ class MainView:
 
         self.tree.bind('<Double-1>', self.on_double_click)
 
+        btn_delete_frame = tk.Frame(self.main_frame)
+        btn_delete_frame.pack(fill=tk.X, pady=5)
+
+        btn_delete_below_table = tk.Button(
+            btn_delete_frame,
+            text="🗑️ Excluir Cidade Selecionada",
+            command=self.remover_cidade,
+            bg=self.theme_manager.theme["button_bg"],
+            fg=self.theme_manager.theme["button_fg"]
+        )
+        btn_delete_below_table.pack(padx=10, anchor='e')
+
     def setup_status_bar(self):
         self.status_bar = tk.Label(self.root, text="Pronto", bd=1, relief=tk.SUNKEN, anchor=tk.W)
         self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
