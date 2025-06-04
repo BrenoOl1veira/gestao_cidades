@@ -325,10 +325,3 @@ class MainView:
             btn = tk.Button(self.main_frame, text=text, command=command, width=30, height=2,
                             bg=self.theme_manager.theme["button_bg"], fg=self.theme_manager.theme["button_fg"])
             btn.pack(pady=5)
-
-# Inicialização
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = MainView(root)
-    app.show_menu_inicial()
-    root.mainloop()
