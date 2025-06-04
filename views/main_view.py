@@ -9,34 +9,26 @@ class MainView:
         self.root = root
         self.controller = CidadeController()
         self.theme_manager = ThemeManager()
-        self.style = ttk.Style()  # Inicializa estilo aqui
-        
+        self.style = ttk.Style()
+
         self.root.title("Gestão de Cidades - CRUD")
         self.root.geometry("900x600")
 
-        # Frame principal
         self.main_frame = tk.Frame(self.root)
         self.main_frame.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
 
-        # Componentes
-        self.setup_toolbar()  # Cria botões antes de configurar o tema
+        self.setup_toolbar()
         self.setup_table()
         self.setup_status_bar()
-
-        # Configuração do tema
         self.setup_theme()
-
-        # Barra de menu
         self.setup_menu()
-
-        # Carregar view inicial
         self.show_list_view()
 
     def setup_theme(self):
         theme = self.theme_manager.theme
-        
+
         self.root.configure(bg=theme["bg"])
-        
+
         self.style.theme_use('default')
         self.style.configure("Treeview",
                              background=theme["bg"],
@@ -47,13 +39,10 @@ class MainView:
                              foreground=theme["fg"],
                              relief="flat")
         self.style.map('Treeview', background=[('selected', '#6A8CAF')])
-        
-        if hasattr(self, 'main_frame'):
-            self.main_frame.configure(bg=theme["bg"])
-        if hasattr(self, 'status_bar'):
-            self.status_bar.configure(bg=theme["bg"], fg=theme["fg"])
 
-        # Armazena os botões para alterar tema depois
+        self.main_frame.configure(bg=theme["bg"])
+        self.status_bar.configure(bg=theme["bg"], fg=theme["fg"])
+
         self.toolbar_buttons = [
             self.btn_add,
             self.btn_edit,
@@ -72,27 +61,23 @@ class MainView:
     def setup_menu(self):
         menubar = tk.Menu(self.root)
 
-        # Menu Arquivo
         file_menu = tk.Menu(menubar, tearoff=0)
         file_menu.add_command(label="Importar Excel", command=self.importar_excel)
         file_menu.add_separator()
         file_menu.add_command(label="Sair", command=self.root.quit)
         menubar.add_cascade(label="Arquivo", menu=file_menu)
 
-        # Menu Cidades
         city_menu = tk.Menu(menubar, tearoff=0)
         city_menu.add_command(label="Adicionar Cidade", command=self.show_add_form)
         city_menu.add_command(label="Listar Cidades", command=self.show_list_view)
         menubar.add_cascade(label="Cidades", menu=city_menu)
 
-        # Menu Relatórios
         report_menu = tk.Menu(menubar, tearoff=0)
         report_menu.add_command(label="Cidade Mais Extensa", command=self.show_mais_extensa)
         report_menu.add_command(label="Cidade Mais Populosa", command=self.show_mais_populosa)
         report_menu.add_command(label="Média de População", command=self.show_media_populacao)
         menubar.add_cascade(label="Relatórios", menu=report_menu)
 
-        # Menu Tema
         theme_menu = tk.Menu(menubar, tearoff=0)
         theme_menu.add_command(label="Alternar Tema", command=self.toggle_theme)
         menubar.add_cascade(label="Tema", menu=theme_menu)
@@ -103,7 +88,6 @@ class MainView:
         toolbar = tk.Frame(self.main_frame, bd=1, relief=tk.RAISED)
         toolbar.pack(fill=tk.X)
 
-        # Botões da toolbar
         icons = {
             'add': '➕',
             'edit': '✏️',
@@ -124,7 +108,6 @@ class MainView:
         self.btn_refresh = tk.Button(toolbar, text=f"{icons['refresh']} Atualizar", command=self.refresh_table)
         self.btn_refresh.pack(side=tk.LEFT, padx=2, pady=2)
 
-        # Campo de pesquisa
         self.search_frame = tk.Frame(toolbar)
         self.search_frame.pack(side=tk.RIGHT, padx=5)
 
@@ -178,8 +161,13 @@ class MainView:
 
     def show_list_view(self):
         for widget in self.main_frame.winfo_children():
-            if widget not in [self.tree.master, self.btn_add.master]:
-                widget.destroy()
+            widget.destroy()
+
+        btn_voltar = tk.Button(self.main_frame, text="⬅ Voltar ao Menu", command=self.show_menu_inicial,
+                               bg=self.theme_manager.theme["button_bg"], fg=self.theme_manager.theme["button_fg"])
+        btn_voltar.pack(anchor="w", padx=10, pady=5)
+
+        self.setup_table()
         self.refresh_table()
 
     def show_add_form(self):
@@ -302,33 +290,28 @@ class MainView:
     def show_mais_extensa(self):
         cidade = self.controller.cidade_mais_extensa()
         if cidade:
-            messagebox.showinfo("Cidade Mais Extensa", 
-                              f"{cidade.nome} - {cidade.dimensao:,.2f} km²")
+            messagebox.showinfo("Cidade Mais Extensa", f"{cidade.nome} - {cidade.dimensao:,.2f} km²")
         else:
             messagebox.showwarning("Aviso", "Nenhuma cidade cadastrada")
 
     def show_mais_populosa(self):
         cidade = self.controller.cidade_mais_populosa()
         if cidade:
-            messagebox.showinfo("Cidade Mais Populosa", 
-                              f"{cidade.nome} - {cidade.populacao:,d} habitantes")
+            messagebox.showinfo("Cidade Mais Populosa", f"{cidade.nome} - {cidade.populacao:,d} habitantes")
         else:
             messagebox.showwarning("Aviso", "Nenhuma cidade cadastrada")
 
     def show_media_populacao(self):
         media = self.controller.media_populacao()
-        messagebox.showinfo("Média de População", 
-                          f"Média populacional: {media:,.2f} habitantes")
+        messagebox.showinfo("Média de População", f"Média populacional: {media:,.2f} habitantes")
 
     def show_menu_inicial(self):
-        # Limpa o main_frame
         for widget in self.main_frame.winfo_children():
             widget.destroy()
 
-        # Título
-        tk.Label(self.main_frame, text="Menu Inicial", font=("Arial", 20), bg=self.theme_manager.theme["bg"], fg=self.theme_manager.theme["fg"]).pack(pady=20)
+        tk.Label(self.main_frame, text="Menu Inicial", font=("Arial", 20),
+                 bg=self.theme_manager.theme["bg"], fg=self.theme_manager.theme["fg"]).pack(pady=20)
 
-        # Botões principais do menu inicial
         btns_info = [
             ("Adicionar Cidade", self.show_add_form),
             ("Listar Cidades", self.show_list_view),
@@ -343,43 +326,9 @@ class MainView:
                             bg=self.theme_manager.theme["button_bg"], fg=self.theme_manager.theme["button_fg"])
             btn.pack(pady=5)
 
-    def show_add_form(self):
-        # Limpa main_frame antes de abrir formulário dentro dele (ou abre em Toplevel como faz)
-        # Se abrir dentro do main_frame, lembre de adicionar botão voltar que chama show_menu_inicial
-        super_show_add_form = super().show_add_form if hasattr(super(), 'show_add_form') else None
-        # Se está abrindo modal, só alterar o menu inicial para fechamento do modal
-        # Aqui apenas exemplo do botão voltar:
-        # posso abrir modal normalmente, botão voltar no modal é o Cancelar
-
-        # Ao abrir aqui, o usuário fecha a modal e volta para o menu inicial automaticamente
-        self.show_menu_inicial()
-        # Mas para modal, basta não fazer nada
-
-        # Como você usa janela modal, pode abrir normalmente:
-        super_show_add_form()
-
-    def show_list_view(self):
-        # Aqui você pode limpar e mostrar a tabela normalmente
-        # Se quiser adicionar o botão voltar, faça assim:
-
-        for widget in self.main_frame.winfo_children():
-            widget.destroy()
-
-        # Botão Voltar
-        btn_voltar = tk.Button(self.main_frame, text="⬅ Voltar ao Menu", command=self.show_menu_inicial,
-                               bg=self.theme_manager.theme["button_bg"], fg=self.theme_manager.theme["button_fg"])
-        btn_voltar.pack(anchor="w", padx=10, pady=5)
-
-        self.setup_table()
-        self.refresh_table()
-
-    # Adapte os outros métodos que mostram telas próprias para incluir botão voltar,
-    # ou se forem modais (Toplevel) o botão cancelar já funciona como voltar.
-
-# Ajuste a inicialização para abrir o menu inicial primeiro:
-
+# Inicialização
 if __name__ == "__main__":
     root = tk.Tk()
     app = MainView(root)
-    app.show_menu_inicial()  # Começa pelo menu inicial
+    app.show_menu_inicial()
     root.mainloop()
