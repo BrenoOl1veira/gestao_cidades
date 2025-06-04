@@ -10,5 +10,3 @@ Este é um aplicativo desenvolvido em Python com arquitetura **MVC (Model-View-C
 - **Utils:** Funções auxiliares, como leitura de CSV
 - **`app.py`**: Ponto de entrada da aplicação
 
-## 📁 Estrutura de Pastas
-
